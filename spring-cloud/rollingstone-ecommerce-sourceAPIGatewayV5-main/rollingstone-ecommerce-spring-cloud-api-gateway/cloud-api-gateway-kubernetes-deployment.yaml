@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloud-api-gateway-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cloud-api-gateway-deployment
+  template:
+    metadata:
+      labels:
+        app: cloud-api-gateway-deployment
+    spec:
+      containers:
+        - name: aws-ecr-spring-cloud-api-gateway
+          image: <your-act-id>.dkr.ecr.us-east-1.amazonaws.com/rollingstone-ecommerce-spring-cloud-api-gateway
+          ports:
+            - containerPort: 8090
+            - containerPort: 8091
+          env:
+            - name: spring.profiles.active
+              value: aws
+          imagePullPolicy: Always

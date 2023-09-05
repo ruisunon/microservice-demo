@@ -1,0 +1,45 @@
+name: codecov
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+permissions:
+  contents: read
+  # Optional: allow read access to pull request. Use with `only-new-issues` option.
+  # pull-requests: read-
+jobs:
+  codecov:
+    strategy:
+      matrix:
+        go: [ 1.18 ]
+        os: [ ubuntu-latest ]
+    name: codecov
+    if: |
+      startsWith(github.event.pull_request.title, 'fix') ||
+      startsWith(github.event.pull_request.title, 'feat') ||
+      startsWith(github.event.pull_request.title, 'refactor') ||
+      startsWith(github.event.pull_request.title, 'perf') ||
+      startsWith(github.event.pull_request.title, 'test')
+    runs-on: ${{ matrix.os }}
+    env:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+    steps:
+      - uses: actions/setup-go@v3
+        with:
+          go-version: ${{ matrix.go }}
+          check-latest: true
+      - name: checkout-vanus
+        uses: actions/checkout@v3
+      - name: Generate coverage report
+        timeout-minutes: 5
+        run: |
+          go test -failfast -race -coverprofile=coverage.txt -covermode=atomic -timeout 300s ./internal/...
+      - uses: codecov/codecov-action@v2
+        with:
+          files: ./coverage.txt # optional
+          name: codecov-umbrella # optional
+          fail_ci_if_error: true # optional (default = false)
+          verbose: true # optional (default = false)

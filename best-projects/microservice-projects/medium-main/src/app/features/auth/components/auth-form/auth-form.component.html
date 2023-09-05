@@ -1,0 +1,38 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()" class="container-max-w-sm">
+  <h1 class="title">{{ mode | titlecase }}</h1>
+
+  <a
+    [routerLink]="['../', mode === AuthFormMode.REGISTER ? AuthFormMode.LOGIN : AuthFormMode.REGISTER]"
+    class="text-center redirection-link">
+    {{ mode === AuthFormMode.REGISTER ? 'Have ' : 'Need ' }} an account?
+  </a>
+
+  <ng-container *ngIf="errorMessages.length">
+    <app-error-messages [errorMessages]="errorMessages" />
+  </ng-container>
+
+  <mat-form-field *ngIf="mode === AuthFormMode.REGISTER" appearance="fill">
+    <mat-label>Username</mat-label>
+    <input matInput formControlName="username" />
+    <mat-error>Username is required</mat-error>
+  </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <mat-label>Email</mat-label>
+    <input matInput formControlName="email" />
+    <mat-error *ngIf="password.hasError('required')">Email is required</mat-error>
+  </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <mat-label>Password</mat-label>
+    <input type="password" matInput formControlName="password" />
+    <mat-error *ngIf="password.hasError('required')">Password is required</mat-error>
+    <mat-error *ngIf="mode === AuthFormMode.REGISTER && password.hasError('minlength')">
+      Password must contain at least 8 characters
+    </mat-error>
+  </mat-form-field>
+
+  <button [disabled]="isSubmitting" type="submit" mat-button color="primary">
+    {{ mode | titlecase }}
+  </button>
+</form>

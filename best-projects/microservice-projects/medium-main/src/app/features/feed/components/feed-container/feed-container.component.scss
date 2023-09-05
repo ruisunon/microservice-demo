@@ -1,0 +1,13 @@
+@use '../../../../../assets/styles/variables/sizes' as sizes;
+
+.feed__content {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+@media (min-width: sizes.$lg) {
+  .feed__content {
+    flex-wrap: nowrap;
+  }
+}

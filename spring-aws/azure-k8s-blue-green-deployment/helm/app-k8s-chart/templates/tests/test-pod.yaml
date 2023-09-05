@@ -1,0 +1,36 @@
+{{ range $service := .Values.services }}
+
+{{ if $service.enabled }}
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-{{ $service.name }}
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: test
+      image: curlimages/curl:7.79.1
+      env:
+      - name: SERVICE_HOST
+        value: {{ quote $service.name }}
+      - name: SERVICE_PORT
+        value: {{ quote $service.service.port }}
+      - name: REST_PATH
+        {{ if contains $service.name "server" }}
+        value: "health"
+        {{ else }}
+        value: "healthz"
+        {{ end }}
+      args:
+      - /bin/sh
+      - -c 
+      - curl -X GET http://$(SERVICE_HOST):$(SERVICE_PORT)/$(REST_PATH)
+  restartPolicy: Never
+  {{- with $.Values.tolerations }}
+  tolerations:
+      {{- toYaml . | nindent 8 }}
+  {{- end }}
+{{ end }}
+{{ end }}

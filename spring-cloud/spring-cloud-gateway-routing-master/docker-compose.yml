@@ -1,0 +1,50 @@
+version: '3'
+services:
+  eureka-server:
+    build: ./eureka-server
+    image: barathece91/eureka-server-k8s
+    ports:
+      - "8761:8761" 
+  config-server:
+    build: ./config-server
+    image: barathece91/config-server-k8s
+    ports:
+      - "8888:8888" 
+  jio-microservice:
+    build: ./jio-store-service
+    image: barathece91/jio-store-service-k8s
+    ports:
+      - "9501:9501" 
+  airtel-microservice:
+    build: ./airtel-store-service
+    image: barathece91/airtel-store-service-k8s
+    ports:
+      - "9502:9502"  
+  vodaphone-microservice:
+    build: ./vodaphone-store-service
+    image: barathece91/vodaphone-store-service-k8s
+    ports:
+      - "9503:9503"
+  spring-cloud-gateway-service:
+    build: ./spring-cloud-gateway
+    image: barathece91/gateway-service-k8s
+    ports:
+      - "9500:9500"
+    depends_on: 
+      - jio-microservice
+      - airtel-microservice
+      - vodaphone-microservice
+    environment:
+      SPRING_PROFILES_ACTIVE: path
+      SPRING_CLOUD_GATEWAY_ROUTES[0]_URI: http://jio-microservice:9501
+      SPRING_CLOUD_GATEWAY_ROUTES[0]_ID: jio-service
+      SPRING_CLOUD_GATEWAY_ROUTES[0]_PREDICATES[0]: Path= /jio/*
+      SPRING_CLOUD_GATEWAY_ROUTES[0]_FILTERS[0]: StripPrefix=1
+      SPRING_CLOUD_GATEWAY_ROUTES[1]_URI: http://airtel-microservice:9502
+      SPRING_CLOUD_GATEWAY_ROUTES[1]_ID: airtel-service
+      SPRING_CLOUD_GATEWAY_ROUTES[1]_PREDICATES[0]: Path= /airtel/*
+      SPRING_CLOUD_GATEWAY_ROUTES[1]_FILTERS[0]: StripPrefix=1
+      SPRING_CLOUD_GATEWAY_ROUTES[2]_URI: http://vodaphone-microservice:9503
+      SPRING_CLOUD_GATEWAY_ROUTES[2]_ID: vodaphone-service
+      SPRING_CLOUD_GATEWAY_ROUTES[2]_PREDICATES[0]: Path= /vodaphone/*
+      SPRING_CLOUD_GATEWAY_ROUTES[2]_FILTERS[0]: StripPrefix=1

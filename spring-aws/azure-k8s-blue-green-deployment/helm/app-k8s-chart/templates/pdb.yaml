@@ -1,0 +1,25 @@
+{{ range $service :=  .Values.services }}
+
+{{ if $service.enabled }}
+
+{{ if $service.pdb.enabled }}
+---
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ $service.name }}
+  {{- with $service.labels }}
+  labels:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  minAvailable: {{ $service.pdb.minAvailable }}
+  selector:
+   {{- with $service.selectorLabels }}
+    matchLabels:
+      {{- toYaml . | nindent 8 }}
+  {{- end }}
+
+{{ end }}
+{{ end }}
+{{ end }}

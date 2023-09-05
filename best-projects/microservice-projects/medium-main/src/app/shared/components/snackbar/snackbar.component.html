@@ -1,0 +1,8 @@
+<div [@slideIn] [class]="['snackbar', position, type]">
+  <div class="snackbar__inner-wrapper">
+    <div *ngIf="title">{{ title }}</div>
+    <div>{{ message }}</div>
+  </div>
+
+  <button (click)="snackbarService.close()" mat-button>{{ buttonLabel }}</button>
+</div>

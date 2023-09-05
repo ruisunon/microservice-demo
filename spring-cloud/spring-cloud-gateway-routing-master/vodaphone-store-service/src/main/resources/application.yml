@@ -1,0 +1,16 @@
+server:
+  port: 9503
+
+spring:
+  application:
+    name: vodaphone-store-service
+  jpa:
+      show-sql: true
+      hibernate:
+        ddl-auto: create
+        
+# disable eureka by default
+
+eureka:
+  client:
+    enabled: false

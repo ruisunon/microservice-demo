@@ -1,0 +1,4 @@
+aws:
+    kms:
+        keyId: ec62cc38-34f2-4fc6-a8fb-c2ea1371cae3
+        region: ap-south-1

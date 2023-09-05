@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    url: jdbc:h2:file:./petclinic_monlith
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: adnDNbs(3b4
+    platform: org.hibernate.dialect.H2Dialect
+  jpa:
+    hibernate:
+      ddl-auto: update

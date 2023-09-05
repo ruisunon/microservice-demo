@@ -1,0 +1,35 @@
+header:
+  license:
+    spdx-id: Apache-2.0
+    copyright-owner: Linkall Inc.
+
+  paths-ignore:
+    - 'proto/include'
+    - 'raft/'
+    - 'build/'
+    - '.github/'
+    - 'docs/'
+    - 'config/'
+    - '.gitignore'
+    - '.gitattributes'
+    - '.golangci.yml'
+    - '.golangci_br.yml'
+    - '**/*.yaml'
+    - 'LICENSES'
+    - '**/*.md'
+    - '**/*.json'
+    - '**/*.test'
+    - '**/*.result'
+    - '**/*.example'
+    - '.codecov.yml'
+    - '**/go.mod'
+    - '**/go.sum'
+    - '**/go.work'
+    - '**/go.work.sum'
+    - 'LICENSE'
+    - '**/*mock*'
+    - '**/*.sh'
+    - 'Makefile'
+    - 'buf.lock'
+    - 'CODEOWNERS'
+  comment: on-failure

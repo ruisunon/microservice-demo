@@ -1,0 +1,38 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <mat-form-field appearance="fill" class="w-full">
+    <mat-label>Image</mat-label>
+    <input matInput formControlName="image" />
+  </mat-form-field>
+
+  <mat-form-field appearance="fill" class="w-full">
+    <mat-label>Username</mat-label>
+    <input matInput formControlName="username" />
+    <ng-container *ngIf="username.invalid && (username.dirty || username.touched)">
+      <mat-error *ngIf="username.errors?.['required']" matSuffix>Username is required</mat-error>
+    </ng-container>
+  </mat-form-field>
+
+  <mat-form-field appearance="fill" class="w-full">
+    <mat-label>Bio</mat-label>
+    <textarea matInput formControlName="bio"></textarea>
+  </mat-form-field>
+
+  <mat-form-field appearance="fill" class="w-full">
+    <mat-label>Email</mat-label>
+    <input matInput formControlName="email" />
+    <ng-container *ngIf="email.invalid && (email.dirty || email.touched)">
+      <mat-error *ngIf=" email.errors?.['email']" matSuffix>Invalid email format</mat-error>
+    </ng-container>
+  </mat-form-field>
+
+  <mat-form-field appearance="fill" class="w-full">
+    <mat-label>Password</mat-label>
+    <input type="password" matInput formControlName="password" />
+    <ng-container *ngIf="password.invalid && (password.dirty || password.touched)">
+      <mat-error *ngIf="password.errors?.['minlength']" matSuffix>Password must contain at least 8 characters.</mat-error>
+      <mat-error *ngIf="password.errors?.['required']" matSuffix>Password is required</mat-error>
+    </ng-container>
+  </mat-form-field>
+
+  <button type="submit" mat-button color="primary" class="w-full">Save</button>
+</form>

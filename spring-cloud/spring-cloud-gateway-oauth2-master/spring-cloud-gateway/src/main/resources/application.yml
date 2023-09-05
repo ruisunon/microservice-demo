@@ -1,0 +1,11 @@
+server:
+   port: 9500
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: store-service
+          uri: http://localhost:9501
+          predicates:
+          - Path= /store/*
+          

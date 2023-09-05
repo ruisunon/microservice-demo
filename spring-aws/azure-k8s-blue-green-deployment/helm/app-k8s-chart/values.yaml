@@ -1,0 +1,125 @@
+
+## Apps
+
+services:
+- name: $(app_label)
+  replicaCount: $(replicas)
+  enabled: true
+  image:
+    repository: $(repository)
+    pullPolicy: $(image_pull_policy)
+    tag: $(tag)
+  resources:
+    requests:
+       cpu: $(cpu_request)
+       memory: $(memory_request)
+    limits:
+       cpu: $(cpu_limit)
+       memory: $(memory_limit)
+  ports:
+  - name: http
+    containerPort: $(container_port)
+    protocol: TCP
+  labels:
+    app: $(app_label)
+    env: $(env)
+    release: $(tag)
+    tier: $(tier)
+  selectorLabels:
+    app: $(app_label)
+    env: $(env)
+    tier: $(tier)
+  service:
+    type: $(service_type)
+    port: $(service_port)
+  config_enabled: $(config_enabled)
+  volumes:
+  - name: $(configmap_name)
+    configMap:
+       name: $(configmap_name)
+  livenessProbe:
+    httpGet:
+      path: $(service_liveness_probe_path)
+      port: http
+    initialDelaySeconds: 15
+    timeoutSeconds: 5
+    periodSeconds: 10
+    successThreshold: 1
+    failureThreshold: 3     
+  readinessProbe:
+    httpGet:
+      path: $(service_readiness_probe_path)
+      port: http
+    initialDelaySeconds: 20
+    timeoutSeconds: 5
+    periodSeconds: 10
+    successThreshold: 1
+    failureThreshold: 3    
+  hpa:
+    enabled: $(hpa_enabled)
+    minReplicas: $(hpa_min_replicas)
+    maxReplicas: $(hpa_max_replicas)
+    targetCPUUtilizationPercentage: $(hpa_targetCPUUtilizationPercentage)
+    targetMemoryUtilizationPercentage: $(hpa_targetMemoryUtilizationPercentage)
+
+  pdb:
+    enabled: $(pdb_enabled)
+    minAvailable: $(pdb_minAvailable)
+  configMap:
+    enabled: $(configmap_enabled)
+    name: $(configmap_name)
+  secret:
+    enabled: $(secrets_enabled)
+    name: $(secrets_name)
+
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+
+podAnnotations: {}
+
+podSecurityContext:
+  fsGroup: 2000
+
+securityContext:
+  capabilities:
+    drop:
+    - ALL
+  runAsNonRoot: true
+  runAsUser: 1000
+
+
+
+ingress:
+  enabled: false
+
+
+# tolerations:
+# - effect: NoSchedule
+#   key: platform
+#   operator: Equal
+#   value: apps
+# - effect: NoSchedule
+#   key: env
+#   operator: Equal
+#   value: $(env)
+
+
+serviceAccount:
+   create: false
+   name: default
+
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+    - weight: 100
+      podAffinityTerm:
+        labelSelector:
+          matchExpressions:
+          - key: app
+            operator: In
+            values:
+            - $(app_label)
+        topologyKey: kubernetes.io/hostname

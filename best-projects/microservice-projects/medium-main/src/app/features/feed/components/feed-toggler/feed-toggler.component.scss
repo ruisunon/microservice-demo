@@ -1,0 +1,21 @@
+@use '../../../../../assets/styles/variables/colors' as color;
+
+.toggler {
+  border-bottom: 1px solid color.$gray;
+
+  &__list {
+    display: flex;
+    gap: 0.25rem;
+    list-style: none;
+  }
+
+  &__item {
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+
+    &:hover,
+    &--active {
+      background-color: lighten(color.$gray, 30%);
+    }
+  }
+}

@@ -1,0 +1,14 @@
+<div class="feed">
+  <app-banner />
+
+  <div class="my-1">
+    <app-feed-toggler [tagName]="tagName" />
+  </div>
+
+  <div class="container-max-w-lg">
+    <section class="feed__content">
+      <app-popular-tags />
+      <app-feed [apiUrl]="apiUrl" />
+    </section>
+  </div>
+</div>

@@ -1,0 +1,15 @@
+@use '../variables/sizes' as sizes;
+
+.desktop {
+  display: none;
+}
+
+@media (min-width: sizes.$md) {
+  .mobile {
+    display: none;
+  }
+
+  .desktop {
+    display: block;
+  }
+}

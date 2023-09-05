@@ -1,0 +1,73 @@
+trigger:
+  - master
+  - develop
+
+
+pr:
+  - master
+  - develop
+  - releases/*
+  - feature/*
+  - bugfix/*
+
+variables:
+  - name: CONTAINER_REGISTRY_SERVICE_CONNECTION
+    value: dockerRegistryServiceConnection
+  - group: spring-demo-app-group
+
+
+stages:
+  - stage: CI_BUILD
+    displayName: Build
+    jobs:
+      - job: BUILD_APP
+        workspace:
+          clean: all
+        pool: $(POOL_LABEL)
+        steps:
+          - task: Bash@3
+            displayName: Pre Build
+            inputs:
+              targetType: 'inline'
+              script: |
+                cd spring-boot-java
+                ls -lt
+          - task: Docker@2
+            displayName: Build
+            inputs:
+              command: build
+              containerRegistry: $(CONTAINER_REGISTRY_SERVICE_CONNECTION)
+              repository: $(REPOSITORY)
+              tags: |
+                $(TAG)
+                latest
+          - task: Docker@2
+            displayName: Junit Test
+            inputs:
+              command: build
+              containerRegistry: $(CONTAINER_REGISTRY_SERVICE_CONNECTION)
+              repository: $(REPOSITORY)
+              tags: $(TAG)
+          - task: Docker@2
+            displayName: Login to Docker Registry
+            inputs:
+              command: login
+              containerRegistry: $(CONTAINER_REGISTRY_SERVICE_CONNECTION)
+          - task: Docker@2
+            displayName: Docker Push
+            inputs:
+              command: push
+              repository: $(REPOSITORY)
+              tags: |
+                $(TAG)
+                latest
+          - task: Docker@2
+            displayName: Logout of Docker Regsitry
+            inputs:
+              command: logout
+              containerRegistry: $(CONTAINER_REGISTRY_SERVICE_CONNECTION)
+          - task: PublishPipelineArtifact@1
+            displayName: 'Publish Pipeline Artifact'
+            inputs:
+              targetPath: '$(System.DefaultWorkingDirectory)'
+              artifact: app

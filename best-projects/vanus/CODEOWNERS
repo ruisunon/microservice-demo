@@ -1,0 +1,24 @@
+* @wenfengwang
+
+/build/ @xdlbdy
+
+/client/ @ifplusor
+
+/cmd/controller/ @xdlbdy
+/cmd/gateway/ @ifplusor
+/cmd/store/ @ifplusor
+/cmd/trigger/ @xdlbdy
+
+/deploy/ @xdlbdy
+
+/internal/controller/ @xdlbdy
+/internal/controller/eventbus/ @ifplusor
+/internal/gateway/ @hwjiangkai
+/internal/kv/ @xdlbdy
+/internal/raft/ @ifplusor
+/internal/store/ @ifplusor
+/internal/trigger/ @xdlbdy
+/internal/timer/ @hwjiangkai
+
+/raft/ @ifplusor
+

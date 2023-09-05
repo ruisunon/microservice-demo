@@ -1,0 +1,27 @@
+<mat-card class="article">
+  <div class="article__meta">
+    <div class="article__info">
+      <a [routerLink]="['/profiles', article.author.username]" class="article__info-link">
+        <img [src]="article.author.image" />
+      </a>
+
+      <div class="article__info-user">
+        <a [routerLink]="['/profiles', article.author.username]" class="hovered-link">
+          {{ article.author.username | titlecase }}
+        </a>
+        <span class="article__date">
+          {{ article.createdAt | date }}
+        </span>
+      </div>
+    </div>
+
+    <app-add-to-favorites [isFavorited]="article.favourited" [articleSlug]="article.slug" [favoritesCount]="article.favouritesCount" />
+  </div>
+
+  <a [routerLink]="['/articles', article.slug]" class="article__content">
+    <h1 class="article__content-title">{{ article.title }}</h1>
+    <p>{{ article.description }}</p>
+    <span>Read more...</span>
+    <app-tag-list [tagList]="article.tagList" />
+  </a>
+</mat-card>

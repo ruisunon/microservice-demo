@@ -1,0 +1,19 @@
+<ng-container *ngIf="isLoading$ | async; else loaded">
+  <div class="center">
+    <mat-spinner [diameter]="20" />
+  </div>
+</ng-container>
+
+<ng-template #loaded>
+  <app-error-message *ngIf="error$ | async as error" [message]="error" />
+
+  <div *ngIf="popularTags$ | async as popularTags" class="tags">
+    <p class="tags__title">Popular Tags</p>
+
+    <div class="tags__list">
+      <a *ngFor="let tag of popularTags" [routerLink]="['/tags', tag]" class="tags__list-item">
+        {{ tag }}
+      </a>
+    </div>
+  </div>
+</ng-template>

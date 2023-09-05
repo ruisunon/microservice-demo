@@ -1,0 +1,8 @@
+@use '../variables/sizes' as s;
+
+@each $size, $i in s.$sizes {
+  .container-max-w-#{$size} {
+    max-width: #{$i};
+    margin: 0 auto !important;
+  }
+}

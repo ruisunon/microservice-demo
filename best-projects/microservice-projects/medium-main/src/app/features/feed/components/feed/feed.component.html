@@ -1,0 +1,21 @@
+<section>
+  <ng-container *ngIf="isLoading$ | async; else loaded">
+    <div class="center">
+      <mat-spinner [diameter]="25" />
+    </div>
+  </ng-container>
+
+  <ng-template #loaded>
+    <ng-container *ngIf="error$ | async as error">
+      <app-error-message [message]="error" />
+    </ng-container>
+
+    <div *ngIf="feedData$ | async as feed" class="cards-wrapper">
+      <app-feed-card *ngFor="let article of feed.articles" [article]="article" />
+
+      <div class="center my-1">
+        <app-paginator [total]="feed.articlesCount" [limit]="limit" [url]="baseUrl" [currentPage]="currentPage" />
+      </div>
+    </div>
+  </ng-template>
+</section>

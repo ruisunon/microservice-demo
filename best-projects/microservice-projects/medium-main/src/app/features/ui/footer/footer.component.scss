@@ -1,0 +1,11 @@
+@use '../../../../assets/styles/variables/colors' as color;
+@use '../../../../assets/styles/variables/sizes' as size;
+
+footer {
+  height: size.$footer-height;
+  background: radial-gradient(color.$success, darken(color.$success, 15%));
+
+  & > div {
+    padding: 1rem 0;
+  }
+}

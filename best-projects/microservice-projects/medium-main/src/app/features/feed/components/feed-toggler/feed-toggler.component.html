@@ -1,0 +1,15 @@
+<div class="toggler">
+  <ul class="container-max-w-lg toggler__list">
+    <li *ngIf="currentUser$ | async" class="toggler__item" routerLinkActive="toggler__item--active">
+      <a [routerLink]="['/feed']">Your feed</a>
+    </li>
+
+    <li [routerLinkActiveOptions]="{ exact: true }" class="toggler__item" routerLinkActive="toggler__item--active">
+      <a [routerLink]="['/']" queryParamsHandling="merge">Global feed</a>
+    </li>
+
+    <li *ngIf="tagName" class="toggler__item" routerLinkActive="toggler__item--active">
+      <a [routerLink]="['/tags', tagName]">{{ tagName }}</a>
+    </li>
+  </ul>
+</div>

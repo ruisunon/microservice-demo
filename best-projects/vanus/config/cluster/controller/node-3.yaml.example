@@ -1,0 +1,14 @@
+name: "test-3"
+ip: "127.0.0.1"
+port: 4048
+etcd:
+  - "127.0.0.1:2379"
+  - "127.0.0.1:3379"
+  - "127.0.0.1:4379"
+topology:
+  test-1: 127.0.0.1:2048
+  test-2: 127.0.0.1:3048
+  test-3: 127.0.0.1:4048
+data_dir: "/tmp/vanus/data3/cluster"
+leader_election:
+  lease_duration: 15

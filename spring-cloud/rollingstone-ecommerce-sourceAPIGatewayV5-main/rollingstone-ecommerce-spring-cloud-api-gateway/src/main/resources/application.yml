@@ -1,0 +1,19 @@
+server:
+  port: 8090
+
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: product_api
+          uri: http://localhost:8081/
+          predicates:
+            - Path=/api/product/**
+          filters:
+            - RewritePath=/api/product/, /product/
+        - id: category_api
+          uri: http://localhost:8092/
+          predicates:
+            - Path=/api/category/**
+          filters:
+            - RewritePath=api/category/, /category/

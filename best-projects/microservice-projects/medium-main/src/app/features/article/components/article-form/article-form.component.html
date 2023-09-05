@@ -1,0 +1,46 @@
+<section class="wrapper">
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <h1 class="title">{{ mode | titlecase }} article</h1>
+    <ng-container *ngIf="errors">
+      <pre>
+
+        {{ errors | json }}
+      </pre>
+    </ng-container>
+
+    <mat-form-field class="w-full" appearance="fill">
+      <mat-label>Title</mat-label>
+      <input matInput formControlName="title" />
+      <mat-error matSuffix />
+    </mat-form-field>
+
+    <mat-form-field class="w-full" appearance="fill">
+      <mat-label>Description</mat-label>
+      <textarea
+        matInput
+        cdkTextareaAutosize
+        #autosize="cdkTextareaAutosize"
+        cdkAutosizeMinRows="1"
+        cdkAutosizeMaxRows="5"
+        formControlName="description">
+      </textarea>
+      <mat-error matSuffix />
+    </mat-form-field>
+
+    <mat-form-field class="w-full" appearance="fill">
+      <mat-label>Body</mat-label>
+      <input matInput formControlName="body" />
+      <mat-error matSuffix />
+    </mat-form-field>
+
+    <mat-form-field class="w-full" appearance="fill">
+      <mat-label>Tag list</mat-label>
+      <input matInput formControlName="tagList" />
+      <mat-error matSuffix />
+    </mat-form-field>
+
+    <div>
+      <button [disabled]="isSubmitting" type="submit" class="w-full" mat-button>{{ mode | titlecase }} article</button>
+    </div>
+  </form>
+</section>

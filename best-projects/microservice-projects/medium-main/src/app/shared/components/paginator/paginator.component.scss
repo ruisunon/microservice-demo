@@ -1,0 +1,24 @@
+@use '../../../../assets/styles/variables/colors' as color;
+
+.paginator {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  list-style: none;
+
+  &__item {
+    border-radius: 0.25rem;
+    border: 1px solid color.$gray;
+    transition: 250ms;
+
+    &:hover,
+    &--active {
+      background-color: lighten(color.$gray, 30%);
+    }
+  }
+
+  &__link {
+    padding: 1rem;
+    display: block;
+  }
+}

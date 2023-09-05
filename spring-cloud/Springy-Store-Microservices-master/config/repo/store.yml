@@ -1,0 +1,163 @@
+# Server configs
+server:
+  port: 9080
+
+spring:
+  cloud:
+    # Massaging provider configurations
+    ## Event-driven messages Stream config
+    stream:
+      defaultBinder: rabbit
+      default.contentType: application/json
+      bindings:
+        output-products:
+          destination: products
+          producer.required-groups: auditGroup
+        output-recommendations:
+          destination: recommendations
+          producer.required-groups: auditGroup
+        output-reviews:
+          destination: reviews
+          producer.required-groups: auditGroup
+
+  security.oauth2.resourceserver:
+    jwt.jwk-set-uri: http://${app.auth-server.host}:${app.auth-server.port}/.well-known/jwks.json
+
+# Logging configs
+logging:
+  level:
+    org.springframework.web.server.adapter.HttpWebHandlerAdapter: TRACE
+
+# Custom configurations
+app:
+  product-service:
+    host: product
+    timeoutSec: 2
+  recommendation-service.host: recommendation
+  review-service.host: review
+
+# Swagger properties
+api:
+  common:
+    version: 4.0
+    title: "Springy Store μServices"
+    termsOfServiceUrl: https://mohamed-taman.github.io/Springy-Store-Microservices/
+    license: "MIT License"
+    licenseUrl: "https://github.com/mohamed-taman/Springy-Store-Microservices/blob/master/LICENSE"
+
+    contact:
+      name: "Mohamed Taman"
+      url: "https://twitter.com/_tamanm"
+      email: "mohamed.taman@mail.com"
+    description: |
+      **Springy Store** is a conceptual simple μServices-based project using the latest
+      cutting-edge technologies, to demonstrate how the store is created to be a
+      cloud-native and 12-factor app agnostic.
+
+      This project μServices are developed based on Spring Boot & Cloud framework, that implement
+      **cloud-native** intuitive, **design patterns** and **best practices**.
+
+  product-composite:
+    get-composite-product:
+      description: Returns a composite view of the specified product id
+      notes: |
+        # Normal response
+        If the requested product id is found the method will return information regarding:
+        1. Product information
+        1. Reviews
+        1. Recommendations
+        1. Service Addresses
+        (technical information regarding the addresses of the microservices that created the response)
+
+        # Expected partial and error responses
+        1. If no product information is found, a <b>404 - Not Found</b> error will be returned
+        1. In no recommendations or reviews are found for a product, a partial response will be returned
+
+    create-composite-product:
+      description: Creates a composite product
+      notes: |
+        # Normal response
+        The composite product information posted to the API will be splitted up and stored as separate product-info, recommendation and review entities.
+
+        # Expected error responses
+        1. If a product with the same productId as specified in the posted information already exists,
+           an <b>422 - Unprocessable Entity</b> error with a "duplicate key" error message will be returned
+
+    delete-composite-product:
+      description: Deletes a product composite
+      notes: |
+        # Normal response
+        Entities for product information, recommendations and reviews related to the specificed productId will be deleted.
+        The implementation of the delete method is idempotent, i.e. it can be called several times with the same response.
+        This means that a delete request of a non existing product will return <b>200 Ok</b>.
+
+# Circuit breaker & Retry configurations
+resilience4j.circuitbreaker:
+  backends:
+    product:
+      registerHealthIndicator: true
+      # meaning that if three or more of the last five calls are faults,
+      # then the circuit will open.
+      ringBufferSizeInClosedState: 5
+      failureRateThreshold: 50
+      # meaning that the circuit breaker will keep the circuit open for 10 seconds
+      # and then transition to the half-open state.
+      waitInterval: 10000
+      automaticTransitionFromOpenToHalfOpenEnabled: true
+      # meaning that the circuit breaker will decide whether the circuit shall be opened or
+      # closed based on the three first calls after the circuit has transitioned to the
+      # half-open state. Since the failureRateThreshold parameters are set to 50%, the circuit
+      # will be open again if two or all three calls fail. Otherwise, the circuit will be closed.
+      ringBufferSizeInHalfOpenState: 3
+      recordExceptions:
+        - org.springframework.web.client.HttpServerErrorException
+        - java.util.concurrent.TimeoutException
+        - java.io.IOException
+      # meaning that our two business exceptions will not be
+      # counted as faults in the circuit breaker.
+      ignoreExceptions:
+        - com.siriusxi.ms.store.util.exceptions.InvalidInputException
+        - com.siriusxi.ms.store.util.exceptions.NotFoundException
+
+resilience4j.retry:
+  backends:
+    product:
+      # Number of retries before giving up, including the first call,
+      # a maximum of two retry attempts.
+      maxRetryAttempts: 3
+      # Wait time before the next retry attempt, We will wait one second between retries.
+      waitDuration: 1000 # 1 second
+      # A list of exceptions that shall trigger a retry,
+      # We will only trigger retries on InternalServerError exceptions,
+      # that is, when HTTP requests respond with a 500 status code
+      retryExceptions:
+        - org.springframework.web.reactive.function.client.WebClientResponseException$InternalServerError
+
+# -----------------------------------------------
+# This is a docker specific profile properties
+# Also profiles could be separated in its owen file
+# with file name format of "application-docker.yaml"
+---
+spring.profiles: docker
+
+server.port: 8080
+
+---
+spring:
+  profiles: external-OAuth-Provider
+  security.oauth2.resourceserver:
+    jwt.jwk-set-uri: https://dev-taman.eu.auth0.com/.well-known/jwks.json
+
+---
+spring:
+  profiles: streaming_partitioned
+  cloud.stream.bindings:
+    output-products.producer:
+      partition-key-expression: payload.key
+      partition-count: 2
+    output-recommendations.producer:
+      partition-key-expression: payload.key
+      partition-count: 2
+    output-reviews.producer:
+      partition-key-expression: payload.key
+      partition-count: 2

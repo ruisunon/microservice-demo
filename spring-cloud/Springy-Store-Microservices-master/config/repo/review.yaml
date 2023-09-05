@@ -1,0 +1,96 @@
+spring:
+  jpa:
+    show-sql: true
+    open-in-view: false
+    database: MYSQL
+    properties.hibernate.dialect: org.hibernate.dialect.MySQL8Dialect
+    # Strongly recommend to set this property to "none" or with flyway  to "validate" in a
+    # production environment!
+    hibernate.ddl-auto: none
+  datasource:
+    ## You often do not need to specify the driver-class-name,
+    ## since Spring Boot can deduce it for most databases from the url.
+    #driver-class-name: com.mysql.cj.jdbc.Driver
+    platform: mysql
+    url: "jdbc:mysql://${app.database.mysql.host}/review-db?useSSL=false&serverTimezone=UTC"
+    username: user
+    password: pwd
+    hikari:
+      initialization-fail-timeout: 60000
+      connection-test-query: SELECT 1
+      maximum-pool-size: 10
+  flyway:
+    #Enable or disable flyway migrations
+    enabled: true
+    url: "jdbc:mysql://${app.database.mysql.host}/${app.database.mysql.schema}?useSSL=false&serverTimezone=UTC"
+    schemas: review-db
+    user: ${spring.datasource.username}
+    password: ${spring.datasource.password}
+  cloud:
+    # Event-driven messages Stream config
+    stream:
+      defaultBinder: rabbit
+      default.contentType: application/json
+      bindings.input:
+        destination: reviews
+        group: reviewsGroup
+        consumer:
+          maxAttempts: 3
+          backOffInitialInterval: 500
+          backOffMaxInterval: 1000
+          backOffMultiplier: 2.0
+      rabbit.bindings.input.consumer:
+        autoBindDlq: true
+        republishToDlq: true
+      kafka:
+        bindings.input.consumer.enableDlq: true
+
+app:
+  database:
+    mysql:
+      host: localhost
+      schema: mysql
+
+server:
+  port: 9083
+
+logging.level:
+  org:
+    hibernate:
+      SQL: DEBUG
+      type.descriptor.sql.BasicBinder: TRACE
+
+# This is a docker specific profile properties
+# Also profiles could be separated in its owen file
+# with file name format of "application-docker.yaml"
+---
+spring:
+  profiles: docker
+  datasource:
+    url: "jdbc:mysql://${app.database.mysql.host}/${app.database.mysql.schema}"
+
+server:
+  port: 8080
+
+app:
+  database:
+    mysql:
+      host: mysql
+      schema: review-db
+
+---
+spring:
+  profiles: streaming_partitioned
+  cloud.stream.bindings.input.consumer:
+    partitioned: true
+    instanceCount: 2
+
+---
+spring:
+  profiles: streaming_instance_0
+  cloud.stream.bindings.input.consumer.instanceIndex: 0
+
+---
+spring:
+  profiles: streaming_instance_1
+  cloud.stream.bindings.input.consumer.instanceIndex: 1

@@ -1,0 +1,94 @@
+@use '../../../../assets/styles/variables/sizes' as size;
+@use '../../../../assets/styles/variables/colors' as color;
+
+.snackbar {
+  --snackbar-width: 370px;
+
+  width: var(--snackbar-width);
+  position: fixed;
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem;
+  border: 2px solid;
+  border-radius: 0.75rem;
+
+  &.success {
+    border-color: color.$success;
+    background-color: lighten(color.$success, 20%);
+  }
+
+  &.info {
+    border-color: color.$info;
+    background-color: rgba(color.$info, 0.5);
+  }
+
+  &.error {
+    border-color: color.$danger;
+    background-color: rgba(color.$danger, 0.5);
+  }
+
+  &--top-center {
+    top: 50px;
+    left: calc(50% - (var(--snackbar-width) * 0.5));
+  }
+
+  &--top-left {
+    top: 50px;
+    left: 50px;
+  }
+
+  &--top-right {
+    top: 50px;
+    right: 1rem;
+  }
+
+  &--bottom-center {
+    bottom: 50px;
+    left: 1rem;
+  }
+
+  &--bottom-left {
+    bottom: 50px;
+    left: 1rem;
+  }
+
+  &--bottom-right {
+    bottom: 50px;
+    right: 1rem;
+  }
+
+  &__inner-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+
+@media (min-width: size.$lg) {
+  .snackbar {
+    &--top-left {
+      top: 50px;
+      left: 50px;
+    }
+
+    &--top-right {
+      top: 50px;
+      right: 50px;
+    }
+
+    &--bottom-center {
+      bottom: 50px;
+      left: 50%;
+    }
+
+    &--bottom-left {
+      bottom: 50px;
+      left: 50px;
+    }
+
+    &--bottom-right {
+      bottom: 50px;
+      right: 50px;
+    }
+  }
+}

@@ -1,0 +1,13 @@
+@use '../../../../assets/styles/variables/sizes' as size;
+
+main {
+  min-height: calc(100vh - size.$footer-height - 56px);
+  padding: 0 1rem;
+}
+
+@media (min-width: size.$lg) {
+  main {
+    min-height: calc(100vh - size.$footer-height - 64px);
+    padding: 0;
+  }
+}

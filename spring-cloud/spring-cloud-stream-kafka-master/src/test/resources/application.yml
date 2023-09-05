@@ -1,0 +1,46 @@
+spring:
+  profiles:
+    active: test
+  flyway:
+    enabled: false
+server:
+      port: 1000
+h2:
+  console:
+    enabled: true
+---
+spring:
+  profiles: test
+  data:
+    rest:
+      detection-strategy: annotated
+  cloud:
+     stream:
+       bindings:
+         idresses:
+           destination: dresses
+           group: dresses-group
+           content-type: application/json
+           consumer:
+             durableSubscription: true
+         iratings:
+           destination: ratings
+           group: ratings-group
+           content-type: application/json
+           consumer:
+             durableSubscription: true
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+logging:
+  level:
+    org:
+      apache:
+        zookeeper:
+          ZooKeeper: error
+      cristina:
+          tech: debug
+      kafka:
+          clients:
+            producer:
+              ProducerConfig: error

@@ -1,0 +1,19 @@
+
+server:
+  port: 9502
+
+
+
+spring:
+  application:
+    name: airtel-store-service
+  jpa:
+      show-sql: true
+      hibernate:
+        ddl-auto: create
+
+# disable eureka by default
+
+eureka:
+  client:
+    enabled: false

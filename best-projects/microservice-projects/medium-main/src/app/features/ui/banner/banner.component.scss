@@ -1,0 +1,18 @@
+@use '../../../../assets/styles/variables/colors' as color;
+
+.banner {
+  background-color: color.$success;
+  background: radial-gradient(color.$success, darken(color.$success, 15%));
+  border-radius: 0.25rem;
+
+  &__inner {
+    padding: 2rem 0;
+    text-align: center;
+    color: color.$light-font-color;
+  }
+
+  &__title {
+    font-size: 3rem;
+    font-weight: 700;
+  }
+}

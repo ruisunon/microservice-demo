@@ -1,0 +1,26 @@
+@use '../../../../assets/styles/variables/colors' as color;
+
+.tags {
+  max-width: 380px;
+  padding: 1rem;
+  background-color: lighten(color.$gray, 30%);
+  border-radius: 0.25rem;
+
+  &__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  &__list-item {
+    background-color: color.$gray;
+    padding: 0.5rem 1rem;
+    color: color.$light-font-color;
+    border-radius: 1rem;
+    transition: 250ms;
+
+    &:hover {
+      background-color: lighten(color.$gray, 10%);
+    }
+  }
+}

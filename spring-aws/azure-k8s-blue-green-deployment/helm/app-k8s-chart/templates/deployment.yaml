@@ -1,0 +1,107 @@
+
+{{ range $service :=  .Values.services }}
+
+{{ if $service.enabled }}
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $service.name }}
+  {{- with $service.labels }}
+  labels:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  annotations:
+   timestamp: {{ now | date "20060102150405" | quote  }}
+spec:
+  replicas: {{ $service.replicaCount }}
+  {{- with $service.selectorLabels }}
+  selector:
+    matchLabels:
+      {{- toYaml . | nindent 8 }}
+  {{- end }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+       maxUnavailable: 25%
+       maxSurge: 25%
+  revisionHistoryLimit: 5
+  progressDeadlineSeconds: 600
+  template:
+    metadata:
+    {{- with $service.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with $service.selectorLabels }}
+      labels:
+         {{- toYaml . | nindent 8 }}
+    {{- end }}
+    spec:
+      {{- with $.Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ $.Values.serviceAccountName | default "default" }}
+      securityContext:
+        {{- toYaml $.Values.podSecurityContext | nindent 8 }}
+      {{ if $service.config_volumes_enabled }}
+      {{ with $service.volumes }}
+      volumes:
+        {{ toYaml . | nindent 8 }}
+      {{ end }}
+      {{ end }}
+      containers:
+        - name: {{ $service.name }}
+          image: "{{ $service.image.repository }}:{{ $service.image.tag | default "latest" }}"
+          imagePullPolicy: {{ $service.image.pullPolicy }}
+          {{ if $service.config_enabled }}
+          envFrom:
+            {{ if $service.configMap.enabled }}
+            - configMapRef:
+                name: {{ $service.configMap.name }}
+            {{ end }}
+            {{ if $service.secret.enabled }}
+            - secretRef:
+                name: {{ $service.secret.name }}
+            {{ end }}
+          {{ end }}
+          {{- with $service.ports }}    
+          ports:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with $service.livenessProbe }}
+          {{ with $service.volumeMounts }}
+          volumeMounts:
+            {{ toYaml . | nindent 12 }}
+          {{ end }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with $service.readinessProbe }}    
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          resources:
+            {{- toYaml $service.resources | nindent 12 }}
+          securityContext:
+            {{- toYaml $.Values.securityContext | nindent 12 }}
+          terminationMessagePath: /dev/termination-log
+      {{- with $.Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $.Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $.Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 60
+
+{{ end }}
+{{ end }}

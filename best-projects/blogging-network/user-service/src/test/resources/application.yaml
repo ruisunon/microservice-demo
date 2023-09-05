@@ -1,0 +1,43 @@
+debug: true
+
+spring:
+  cloud:
+    config:
+      enabled: false
+    stream:
+      bindings:
+        userFollowing-out-0:
+          destination: users.following
+      rabbit:
+        binder:
+          connection-name-prefix: ${spring.application.name}
+        bindings:
+          userFollowing-out-0:
+            producer:
+              routing-key-expression: headers['type']
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+        generate_statistics: true
+        session.events.log.LOG_QUERIES_SLOWER_THAN_MS: 3
+
+eureka:
+  client:
+    enabled: false
+
+app:
+  keycloak:
+    serverUrl: http://localhost:8090/auth
+    realm: bloggingnetwork
+    adminUsername: admin
+    adminPassword: admin
+
+logging:
+  level:
+    org.hibernate.stat: DEBUG
+    org.hibernate.SQL: DEBUG

@@ -1,0 +1,41 @@
+service: thumbnail-generator
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: java11
+  # replace this with your profile or remove it to use the default profile
+  profile: serverless-admin
+  region: eu-central-1
+  timeout: 10
+  memorySize: 1024
+  logRetentionInDays: 7
+  iam:
+    role:
+      statements:
+        - Effect: 'Allow'
+          Action:
+            - 's3:*'
+          Resource:
+            - 'arn:aws:s3:::${self:custom.thumbnailBucket}/*'
+            - !Join ['', ['arn:aws:s3:::', !Ref ServerlessDeploymentBucket, '/*']]
+
+custom:
+  # replace this with your bucket name as S3 bucket names are unique
+  thumbnailBucket: image-uploads-java-thumbnail-example
+
+package:
+  artifact: target/thumbnail-generator.jar
+
+functions:
+  thumbnailer:
+    handler: de.rieckpil.blog.ThumbnailHandler
+    events:
+      - s3:
+          bucket: ${self:custom.thumbnailBucket}
+          event: s3:ObjectCreated:*
+          rules:
+            - prefix: uploads/
+            - suffix: .png
+    environment:
+      THUMBNAIL_SIZE: 100

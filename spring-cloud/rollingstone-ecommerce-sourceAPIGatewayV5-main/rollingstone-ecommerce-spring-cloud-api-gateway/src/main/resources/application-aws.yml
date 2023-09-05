@@ -1,0 +1,19 @@
+server:
+  port: 8090
+
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: product_api
+          uri: http://a95a7e4cb5d69434487d513d8682a7ee-950437026.us-east-1.elb.amazonaws.com:8092/
+          predicates:
+            - Path=/api/product/**
+          filters:
+            - RewritePath=/api/product/, /product/
+        - id: category_api
+          uri: http://a56152d6465a14592aaae4655f3f2411-103405578.us-east-1.elb.amazonaws.com:8092/
+          predicates:
+            - Path=/api/category/**
+          filters:
+            - RewritePath=api/category/, /category/

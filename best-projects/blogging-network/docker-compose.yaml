@@ -1,0 +1,113 @@
+version: '3.8'
+
+services:
+  postgres:
+    build: ./postgres
+    container_name: postgres
+    environment:
+      POSTGRES_MULTIPLE_DATABASES: keycloak,user_service,post_service
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - '5432:5432'
+
+  config:
+    build: ./config
+    container_name: config
+    ports:
+      - '8888:8888'
+    restart: unless-stopped
+
+  service-discovery:
+    build: ./service-discovery
+    container_name: service-discovery
+    depends_on:
+      - config
+    environment:
+      CONFIG_URI: http://config:8888
+    ports:
+      - '8761:8761'
+    restart: unless-stopped
+
+  api-gateway:
+    build: ./api-gateway
+    container_name: api-gateway
+    depends_on:
+      - config
+      - service-discovery
+    environment:
+      CONFIG_URI: http://config:8888
+    ports:
+      - '9000:8080'
+    restart: unless-stopped
+
+  keycloak:
+    build: ./keycloak
+    container_name: keycloak
+    environment:
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: admin
+      DB_VENDOR: POSTGRES
+      DB_ADDR: postgres
+      DB_DATABASE: keycloak
+      DB_SCHEMA: public
+      DB_USER: keycloak
+      DB_PASSWORD: keycloak
+    depends_on:
+      - postgres
+    restart: unless-stopped
+    ports:
+      - '8080:8080'
+
+  redis:
+    image: redis
+    container_name: redis
+    ports:
+      - '6379:6379'
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+
+  user-service:
+    build: ./user-service
+    container_name: user-service
+    environment:
+      CONFIG_URI: http://config:8888
+    depends_on:
+      - config
+      - service-discovery
+      - postgres
+      - keycloak
+      - rabbitmq
+    restart: unless-stopped
+
+  post-service:
+    build: ./post-service
+    container_name: post-service
+    environment:
+      CONFIG_URI: http://config:8888
+    depends_on:
+      - config
+      - postgres
+      - keycloak
+      - rabbitmq
+      - redis
+      - service-discovery
+    restart: unless-stopped
+
+  user-feed-service:
+    build: ./user-feed-service
+    container_name: user-feed-service
+    environment:
+      CONFIG_URI: http://config:8888
+    depends_on:
+      - config
+      - redis
+      - keycloak
+      - rabbitmq
+      - service-discovery
+    restart: unless-stopped

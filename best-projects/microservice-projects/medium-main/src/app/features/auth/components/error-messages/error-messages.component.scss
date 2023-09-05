@@ -1,0 +1,6 @@
+@use '../../../../../assets/styles/variables/colors' as color;
+
+.error {
+  color: color.$danger;
+  font-weight: 700;
+}

@@ -1,0 +1,19 @@
+
+{{ range $service :=  .Values.services }}
+
+{{ if $service.configMap.enabled }}
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: {{ $service.configMap.name }}
+
+{{- with $service.configMap.data }}
+data:
+    {{- toYaml . | nindent 4}}
+{{ end }}
+
+
+{{ end }}
+
+{{ end }}

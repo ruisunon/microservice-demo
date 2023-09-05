@@ -1,0 +1,21 @@
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/account/**, /users/**
+        - id: post-service
+          uri: lb://post-service
+          predicates:
+            - Path=/posts/**
+        - id: user-feed-service
+          uri: lb://user-feed-service
+          predicates:
+            - Path=/feed/**
+
+eureka:
+  client:
+    registerWithEureka: false
+    fetchRegistry: false
